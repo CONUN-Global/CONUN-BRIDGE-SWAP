@@ -79,6 +79,6 @@ def test_withdraw_token(accounts, projecttoken, bridge):
 
     logging.info(projecttoken.balanceOf(accounts[2]))
 
-
     assert projecttoken.balanceOf(bridge.address) == 0
+
     assert projecttoken.balanceOf(accounts[2]) == AMOUNT
