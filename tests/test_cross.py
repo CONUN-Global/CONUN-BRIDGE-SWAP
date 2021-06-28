@@ -39,11 +39,46 @@ def test_cross(accounts, projecttoken, bridge):
                 {'from': accounts[0]}
             )
 
-
-
         logging.info(projecttoken.balanceOf(bridge.address))
+
         assert projecttoken.balanceOf(bridge.address) == AMOUNT
 
 
+def test_withdraw_token(accounts, projecttoken, bridge):
+    with reverts("Insufficient balance"):
+        bridge.claimTokens(
+            AMOUNT+ AMOUNT,
+            accounts[2],
+            1,
+            {'from': accounts[0]}
+        )
+
+    with reverts("sender address must be valid address"):
+        bridge.claimTokens(
+            AMOUNT,
+            '0x0000000000000000000000000000000000000000',
+            1,
+            {'from': accounts[0]}
+        )
+
+    with reverts("Ownable: caller is not the owner"):
+        bridge.claimTokens(
+            AMOUNT + AMOUNT,
+            accounts[2],
+            1,
+            {'from': accounts[1]}
+        )
 
 
+    bridge.claimTokens(
+        AMOUNT,
+        accounts[2],
+        1,
+        {'from': accounts[0]}
+    )
+
+    logging.info(projecttoken.balanceOf(accounts[2]))
+
+
+    assert projecttoken.balanceOf(bridge.address) == 0
+    assert projecttoken.balanceOf(accounts[2]) == AMOUNT
