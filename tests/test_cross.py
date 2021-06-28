@@ -8,6 +8,14 @@ AMOUNT = 100e18
 
 
 def test_cross(accounts, projecttoken, bridge):
+        with reverts("Cant deposit 0 amount"):
+            bridge.depositTokens(
+                0,
+                1,
+                accounts[0],
+                {'from': accounts[0]}
+            )
+
         with reverts("Please approve first"):
             bridge.depositTokens(
                 AMOUNT,
@@ -23,17 +31,19 @@ def test_cross(accounts, projecttoken, bridge):
                 {'from': accounts[0]}
             )
 
+        with reverts("Depositing user should be same as msg.sender"):
+            bridge.depositTokens(
+                AMOUNT,
+                1,
+                accounts[1],
+                {'from': accounts[0]}
+            )
+
 
 
         logging.info(projecttoken.balanceOf(bridge.address))
-        # assert projecttoken.balanceOf(locker.address) == AMOUNT
+        assert projecttoken.balanceOf(bridge.address) == AMOUNT
 
 
-
-
-# def test_claim(accounts, projecttoken, locker):
-#     with reverts("You are not allowed to take this token"):
-#         locker.claimTokens(0, {'from': accounts[0]})
-#
 
 
