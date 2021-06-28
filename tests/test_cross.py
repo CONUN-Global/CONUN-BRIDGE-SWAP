@@ -47,7 +47,7 @@ def test_cross(accounts, projecttoken, bridge):
 def test_withdraw_token(accounts, projecttoken, bridge):
     with reverts("Insufficient balance"):
         bridge.claimTokens(
-            AMOUNT+ AMOUNT,
+            AMOUNT + AMOUNT,
             accounts[2],
             1,
             {'from': accounts[0]}
