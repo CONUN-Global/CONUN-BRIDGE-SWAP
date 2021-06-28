@@ -7,8 +7,9 @@ def projecttoken(accounts, TokenMock):
     yield token
 
 @pytest.fixture(scope="module")
-def locker(accounts, Bridge):
-    locker = accounts[0].deploy(Bridge)
-    yield locker
+def bridge(accounts, Bridge, projecttoken):
+    bridge = accounts[0].deploy(Bridge)
+    bridge.setConTokenAddress(projecttoken.address)
+    yield bridge
 
 
