@@ -48,8 +48,8 @@ contract Bridge is Ownable {
     }
 
 
-    function getDepositDetailsById(uint256 depositId) {
-
+    function getInfoById(uint256 _id) external view returns (BridgeStorage memory) {
+        return history[_id];
     }
 
 
