@@ -2,6 +2,7 @@
 import "OpenZeppelin/openzeppelin-contracts@4.1.0/contracts/access/Ownable.sol";
 import "OpenZeppelin/openzeppelin-contracts@4.1.0/contracts/token/ERC20/IERC20.sol";
 import "OpenZeppelin/openzeppelin-contracts@4.1.0/contracts/token/ERC20/utils/SafeERC20.sol";
+import "./BridgeTypes.sol";
 
 pragma solidity ^0.8.2;
 
@@ -12,8 +13,8 @@ contract Bridge is Ownable {
     address public CON_IERC20;
 
     // mappings
-    mapping(uint256 => mapping(address => uint256)) private withdrawals;
-    mapping(uint256 => mapping(address => uint256)) private deposits;
+    mapping(uint256 => BridgeStorage) private history;
+
 
     // events
     event NewDeposit(address indexed from, uint256 indexed depositId, uint256 indexed amount);
@@ -33,12 +34,21 @@ contract Bridge is Ownable {
         require(msg.sender == user, "Depositing user should be same as msg.sender");
 
         // store amount
-        deposits[depositId][msg.sender] = _amount;
+
+        history[depositId] =BridgeTypes({
+            user: msg.sender,
+            amount: _amount,
+            type: Type.DEPOSIT});
 
         IERC20 token = IERC20(CON_IERC20);
         token.safeTransferFrom(msg.sender, address(this), _amount);
 
         emit NewDeposit(msg.sender, depositId, _amount);
+
+    }
+
+
+    function getDepositDetailsById(uint256 depositId) {
 
     }
 
@@ -61,8 +71,10 @@ contract Bridge is Ownable {
         require(_to != address(0), "sender address must be valid address");
 
 
-        withdrawals[withdrawId][_to] = _amount;
-        //send tokens
+        history[withdrawId] =BridgeTypes({
+            user: msg.sender,
+            amount: _amount,
+            type: Type.DEPOSIT});        //send tokens
         IERC20 token = IERC20(CON_IERC20);
         token.safeTransfer(_to, _amount);
 
