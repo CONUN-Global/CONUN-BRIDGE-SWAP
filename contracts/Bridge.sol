@@ -6,7 +6,7 @@ import "./BridgeTypes.sol";
 
 pragma solidity ^0.8.2;
 
-contract Bridge is Ownable {
+contract Bridge is BridgeTypes, Ownable {
     using SafeERC20 for IERC20;
 
 
@@ -35,10 +35,10 @@ contract Bridge is Ownable {
 
         // store amount
 
-        history[depositId] =BridgeTypes({
+        history[depositId] =BridgeStorage({
             user: msg.sender,
             amount: _amount,
-            type: Type.DEPOSIT});
+            action: Types.DEPOSIT});
 
         IERC20 token = IERC20(CON_IERC20);
         token.safeTransferFrom(msg.sender, address(this), _amount);
@@ -71,10 +71,10 @@ contract Bridge is Ownable {
         require(_to != address(0), "sender address must be valid address");
 
 
-        history[withdrawId] =BridgeTypes({
+        history[withdrawId] =BridgeStorage({
             user: msg.sender,
             amount: _amount,
-            type: Type.DEPOSIT});        //send tokens
+            action: Types.WITHDRAW});        //send tokens
         IERC20 token = IERC20(CON_IERC20);
         token.safeTransfer(_to, _amount);
 
