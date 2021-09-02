@@ -8,8 +8,8 @@ def projecttoken(accounts, TokenMock):
 
 @pytest.fixture(scope="module")
 def bridge(accounts, Bridge, projecttoken):
-    bridge = accounts[0].deploy(Bridge)
-    bridge.setConTokenAddress(projecttoken.address)
+    bridge = accounts[0].deploy(Bridge, projecttoken.address)
+    # bridge.setConTokenAddress(projecttoken.address)
     yield bridge
 
 
