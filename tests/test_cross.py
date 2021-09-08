@@ -54,59 +54,37 @@ def test_withdraw_token(accounts, projecttoken, bridge):
     accounts.add(PRIVKEY10)
     bridge.setTrustedSigner(accounts[10], True, {'from': accounts[0]})
     CHAIN_NO = chain.height
-    signed_message = create_signature(AMOUNT, bridge.getLastBlock(accounts[2]), CHAIN_NO, accounts[2].address, PRIVKEY10)
-    # signed_message = create_signature(AMOUNT, 0, CHAIN_NO, accounts[2], 'x112', PRIVKEY10)
-    # with reverts("Insufficient balance"):
-    #     bridge.claimTokens(
-    #         AMOUNT + AMOUNT,
-    #         accounts[2],
-    #         '1',
-    #         {'from': accounts[0]}
-    #     )
-    #
-    # with reverts("sender address must be valid address"):
-    #     bridge.claimTokens(
-    #         AMOUNT,
-    #         '0x0000000000000000000000000000000000000000',
-    #         '1',
-    #         {'from': accounts[0]}
-    #     )
-    #
-    # with reverts("Ownable: caller is not the owner"):
-    #     bridge.claimTokens(
-    #         AMOUNT + AMOUNT,
-    #         accounts[2],
-    #         '1',
-    #         {'from': accounts[1]}
-    #     )
-    #
-
+    signed_message = create_signature(AMOUNT, accounts[2].address, PRIVKEY10)
     bridge.claimTokens(
         AMOUNT,
-        bytes('0x11', 'utf-8'),
-        bridge.getLastBlock(accounts[2]),
-        CHAIN_NO,
+       '0x2d6bf9d05afa7391c859feecc34188b18aeda2f69d496a2005840262597c6159',
         signed_message.messageHash,
         signed_message.signature,
+        bytes('73287e3bfe781ca90c1b922c5a6b46c0d31e75d20edd9b68631617f35308871c', 'utf-8'),
         {'from': accounts[2]}
     )
-
     logging.info(projecttoken.balanceOf(accounts[2]))
-    #
-    # assert projecttoken.balanceOf(bridge.address) == 0
-    #
-    # assert projecttoken.balanceOf(accounts[2]) == AMOUNT
 
 
+def test_sha256_enhancity(accounts, bridge):
 
-def create_signature(balance, lastblock, currentblock, address,privatekey):
-    # base_msg = Web3.solidityKeccak(['uint256','uint256', 'uint256', 'uint256', 'address'],
-    #                                 [pid, balance, lastblock, currentblock, Web3.toChecksumAddress(address)])
+    KEY = '73287e3bfe781ca90c1b922c5a6b46c0d31e75d20edd9b68631617f35308871c'
 
-    encoded_msg = encode_single('(uint256,uint256,uint256,address)', (balance, lastblock, currentblock, Web3.toChecksumAddress(address)))
+    encoded = bridge.getLock(bytes(KEY, 'utf-8'), {'from': accounts[0]})
+
+    logging.info(encoded)
+    logging.info(KEY)
+
+
+def create_signature(balance,address,privatekey):
+
+    encoded_msg = encode_single('(uint256,address)', (balance, Web3.toChecksumAddress(address)))
     base_msg = Web3.solidityKeccak(['bytes32'],
                                    [encoded_msg])
     message = encode_defunct(primitive=base_msg)
     signed_message = w3.eth.account.sign_message(message, private_key=privatekey)
 
     return signed_message
+
+
+
